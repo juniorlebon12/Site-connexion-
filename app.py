@@ -1,10 +1,14 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
 app.secret_key = 'votre_cle_secrete'
 
 # Compte fictif pour test
-USER = {'username': 'Thomas Rousseau', 'password': '12345'}
+USER = {
+    'username': 'demo_user',
+    'password': '12345'
+}
 
 @app.route('/')
 def home():
@@ -14,15 +18,16 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
-        username = request.form['email']
+        username = request.form['username']
         password = request.form['password']
         if username == USER['username'] and password == USER['password']:
             session['username'] = username
             return redirect(url_for('dashboard'))
         else:
-            return 'Identifiants incorrects, essayez encore !'
-    return render_template('index.html')
+            error = 'Identifiants incorrects'
+    return render_template('login.html', error=error)
 
 @app.route('/dashboard')
 def dashboard():
@@ -30,17 +35,12 @@ def dashboard():
         return render_template('dashboard.html', username=session['username'])
     return redirect(url_for('login'))
 
-@app.route('/virement', methods=['POST'])
-def virement():
-    receiver = request.form['receiver']
-    amount = request.form['amount']
-    # Logique de virement ici
-    return f"Virement de {amount}€ effectué vers {receiver}."
-
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Assurez-vous que l'application écoute sur le bon port
+    port = os.environ.get('PORT', 5000)  # Récupérer le port de l'environnement ou utiliser 5000
+    app.run(host='0.0.0.0', port=port)
