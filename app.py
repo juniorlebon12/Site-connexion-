@@ -1,46 +1,41 @@
-import os
 from flask import Flask, render_template, request, redirect, url_for, session
+import os
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete'
+app.secret_key = "bnp_secret_key"
 
-# Compte fictif pour test
-USER = {
-    'username': 'demo_user',
-    'password': '12345'
+# Informations fictives pour la connexion
+USER_DATA = {
+    "numero_compte": "123456789",
+    "mot_de_passe": "admin123",
+    "nom": "Thomas Rousseau",
+    "solde": "12 580 €"
 }
 
 @app.route('/')
 def home():
-    if 'username' in session:
-        return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
+    erreur = ""
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if username == USER['username'] and password == USER['password']:
-            session['username'] = username
+        compte = request.form['compte']
+        mot_de_passe = request.form['mot_de_passe']
+        if compte == USER_DATA["numero_compte"] and mot_de_passe == USER_DATA["mot_de_passe"]:
+            session['nom'] = USER_DATA["nom"]
+            session['solde'] = USER_DATA["solde"]
             return redirect(url_for('dashboard'))
         else:
-            error = 'Identifiants incorrects'
-    return render_template('login.html', error=error)
+            erreur = "Identifiants incorrects. Veuillez réessayer."
+    return render_template('login.html', erreur=erreur)
 
 @app.route('/dashboard')
 def dashboard():
-    if 'username' in session:
-        return render_template('dashboard.html', username=session['username'])
-    return redirect(url_for('login'))
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
+    if 'nom' in session:
+        return render_template('dashboard.html', nom=session['nom'], solde=session['solde'])
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # Assurez-vous que l'application écoute sur le bon port
-    port = os.environ.get('PORT', 5000)  # Récupérer le port de l'environnement ou utiliser 5000
+    port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
