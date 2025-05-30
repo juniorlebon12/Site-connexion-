@@ -1,41 +1,42 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import os
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
-app.secret_key = "bnp_secret_key"
+app.secret_key = 'supersecretkey'  # Nécessaire pour utiliser `session` et `flash`
 
-# Informations fictives pour la connexion
-USER_DATA = {
-    "numero_compte": "123456789",
-    "mot_de_passe": "admin123",
-    "nom": "Thomas Rousseau",
-    "solde": "12 580 €"
+# Utilisateur fictif pour exemple
+utilisateurs = {
+    'admin': 'password123',
+    'test': '1234'
 }
 
 @app.route('/')
-def home():
+def index():
+    if 'username' in session:
+        return f"Bienvenue {session['username']} ! <a href='/logout'>Se déconnecter</a>"
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    erreur = ""
+    erreur = None
     if request.method == 'POST':
-        compte = request.form['compte']
-        mot_de_passe = request.form['mot_de_passe']
-        if compte == USER_DATA["numero_compte"] and mot_de_passe == USER_DATA["mot_de_passe"]:
-            session['nom'] = USER_DATA["nom"]
-            session['solde'] = USER_DATA["solde"]
-            return redirect(url_for('dashboard'))
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Vérifie si l'utilisateur existe et si le mot de passe est correct
+        if username in utilisateurs and utilisateurs[username] == password:
+            session['username'] = username
+            flash('Connexion réussie !', 'success')
+            return redirect(url_for('index'))
         else:
-            erreur = "Identifiants incorrects. Veuillez réessayer."
+            erreur = "Nom d'utilisateur ou mot de passe incorrect."
+
     return render_template('login.html', erreur=erreur)
 
-@app.route('/dashboard')
-def dashboard():
-    if 'nom' in session:
-        return render_template('dashboard.html', nom=session['nom'], solde=session['solde'])
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    flash('Déconnecté avec succès.', 'info')
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
