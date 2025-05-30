@@ -3,76 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - BNP Paribas</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .login-container {
-            width: 300px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #2c6b2f; /* Couleur verte */
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #2c6b2f; /* Vert */
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #249f22;
-        }
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-    </style>
+    <title>Connexion</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="login-container">
-        <h2>Accédez à votre compte BNP Paribas</h2>
-        <form action="/login" method="POST">
+        <h2>Connexion</h2>
+        <form action="/dashboard" method="POST">
             <div class="input-group">
-                <label for="username">Identifiant</label>
-                <input type="text" id="username" name="username" placeholder="Votre identifiant" required>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="Votre email" required>
             </div>
             <div class="input-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                <input type="password" name="password" id="password" placeholder="Votre mot de passe" required>
             </div>
             <button type="submit">Se connecter</button>
         </form>
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
     </div>
 </body>
 </html>
